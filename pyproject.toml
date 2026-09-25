@@ -1,5 +1,6 @@
 [project]
 name = "handcron"
+description = "Python task queue with manual ticks"
 dynamic = ["version"]
 requires-python = ">=3.12"
 readme = "README.md"

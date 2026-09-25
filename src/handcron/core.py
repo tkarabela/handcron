@@ -115,8 +115,9 @@ class PostgresHandcron(Handcron):
     """
 
     def __init__(self, database: PathOrStr) -> None:
-        super().__init__()
         self.database = database
+        # call __init__ last, so that _make_storage() sees out attributes
+        super().__init__()
 
     def _make_storage(self) -> BaseStorage:
         # local import, since the dependency is gated by "postgres" extra

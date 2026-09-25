@@ -1,3 +1,12 @@
+"""
+Handcron - lightweight Python library for periodic tasks
+--------------------------------------------------------
+
+For graceful shutdown, use SIGINT or SIGTERM on the main process.
+This will stop after the currently in-flight tasks are finished.
+
+"""
+import argparse
 import logging
 import os
 import sys
@@ -23,10 +32,18 @@ class Command(StrEnum):
 
 class CLI:
     def __init__(self) -> None:
-        self.parser = ArgumentParser("handcron")
+        self.parser = ArgumentParser(
+            "handcron", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+        )
         verbose_group = self.parser.add_mutually_exclusive_group()
-        verbose_group.add_argument("-v", "--verbose", action="store_const", dest="logging_level", const=logging.DEBUG, help="print debug logs")
-        verbose_group.add_argument("-q", "--quiet", action="store_const", dest="logging_level", const=logging.WARNING, help="print only warnings and errors")
+        verbose_group.add_argument(
+            "-v", "--verbose", action="store_const", dest="logging_level", const=logging.DEBUG,
+            help="print debug logs"
+        )
+        verbose_group.add_argument(
+            "-q", "--quiet", action="store_const", dest="logging_level", const=logging.WARNING,
+            help="print only warnings and errors"
+        )
 
         subparsers = self.parser.add_subparsers(dest="command", metavar="command", required=True)
 
@@ -124,6 +141,7 @@ class CLI:
 
     def run_tick(self, cron: Handcron, args: Namespace) -> int:
         worker_type: WorkerType = args.worker_type
+        cron.install_signal_handler()
         consumer = cron.create_consumer(worker_type)
         logger.info("starting single consumer run")
         consumer.run()
@@ -132,6 +150,7 @@ class CLI:
     def run_serve(self, cron: Handcron, args: Namespace) -> int:
         worker_type: WorkerType = args.worker_type
         scheduler_interval: int = args.scheduler_interval
+        cron.install_signal_handler()
         consumer = cron.create_consumer(worker_type)
 
         if scheduler_interval <= 0:
@@ -140,17 +159,20 @@ class CLI:
 
         tick_delta = timedelta(seconds=scheduler_interval)
         logger.info("starting consumer run every %s", tick_delta)
-        while True:
+        while cron.running:
             tick = datetime.now()
             consumer.run()
             elapsed = datetime.now() - tick
             sleep_for_sec = (tick_delta - elapsed).total_seconds()
-            if sleep_for_sec > 0:
+            if cron.running and sleep_for_sec > 0:
                 sleep(sleep_for_sec)
+
+        return 0
 
     def run_oneshot(self, cron: Handcron, args: Namespace) -> int:
         worker_type: WorkerType = args.worker_type
         task_name: str = args.task_name
+        cron.install_signal_handler()
 
         try:
             task = cron.get_periodic_task(task_name)

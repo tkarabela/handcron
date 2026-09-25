@@ -64,6 +64,8 @@ class BaseSerialConsumer(BaseConsumer, ABC):
     def _run(self) -> None:
         due_tasks = self.cron.scheduler.get_due_tasks()
         for due_task in due_tasks:
+            if not self.cron.running:
+                break
             self._run_due_task(due_task)
 
     def run_oneshot(self, task: PeriodicTask) -> TaskRun:

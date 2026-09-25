@@ -1,5 +1,6 @@
 import logging
 import multiprocessing
+import signal
 import sys
 from uuid import UUID
 
@@ -27,6 +28,9 @@ class ProcessConsumer(BaseSerialConsumer):
 
     @staticmethod
     def _execute_task_fn_inner(fn: TaskFn) -> None:
+        # Ctrl+C is delivered to the whole console (Windows) / foreground process group (POSIX),
+        # so the child would get KeyboardInterrupt as well; let the main process handle graceful shutdown
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
         try:
             fn()
         except Exception:

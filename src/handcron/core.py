@@ -1,6 +1,8 @@
 import logging
+import signal
 from abc import ABC, abstractmethod
 from datetime import date
+from types import FrameType
 
 from handcron.consumer.base import BaseConsumer
 from handcron.consumer.process import ProcessConsumer
@@ -31,6 +33,7 @@ class Handcron(ABC):
         self.name = name
         self.storage = self._make_storage()
         self.scheduler = Scheduler(self.storage)
+        self.running = True
 
     @abstractmethod
     def _make_storage(self) -> BaseStorage:
@@ -86,6 +89,16 @@ class Handcron(ABC):
                 return ProcessConsumer(self)
             case _:
                 raise NotImplementedError("bad worker type")
+
+    def install_signal_handler(self):
+        """Handle SIGINT/SIGTERM by preventing new tasks from being started"""
+        logger.debug("Installing signal handler")
+        signal.signal(signal.SIGINT, self._handle_user_interrupt)
+        signal.signal(signal.SIGTERM, self._handle_user_interrupt)
+
+    def _handle_user_interrupt(self, signum: int, frame: FrameType | None) -> None:
+        logger.info("Interrupted by user, waiting for already running tasks and exiting...")
+        self.running = False
 
 
 class MemoryHandcron(Handcron):

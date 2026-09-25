@@ -1,6 +1,14 @@
+[![handcron build master branch](https://img.shields.io/github/actions/workflow/status/tkarabela/handcron/ci.yml?branch=master)](https://github.com/tkarabela/handcron/actions)
+[![handcron test code coverage](https://img.shields.io/codecov/c/github/tkarabela/handcron)](https://app.codecov.io/github/tkarabela/handcron)
+[![Static Badge](https://img.shields.io/badge/Pyrefly%20%26%20Ruff-checked-blue?style=flat)](https://github.com/tkarabela/handcron/actions)
+[![PyPI - Version](https://img.shields.io/pypi/v/handcron.svg?style=flat)](https://pypi.org/project/handcron/)
+[![PyPI - Status](https://img.shields.io/pypi/status/handcron.svg?style=flat)](https://pypi.org/project/handcron/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/handcron.svg?style=flat)](https://pypi.org/project/handcron/)
+[![PyPI - License](https://img.shields.io/pypi/l/handcron.svg?style=flat)](LICENSE.txt)
+
 # 🕐 handcron 💁
 
-_Lightweight Python library for periodic tasks_
+_Python task queue with manual ticks_
 
 Unlike a traditional task queue, _handcron_ is designed to process
 due tasks and then stop - by default, there is no long-running process in the background. 
@@ -8,6 +16,13 @@ Instead, you periodically run `handcron tick` yourself (from a cron, etc.).
 
 It is similar to [django-cron](https://github.com/Tivix/django-cron) and [anacron(8)](https://linux.die.net/man/8/anacron),
 but comes as a simple Python library with [Huey](https://github.com/coleifer/huey)-inspired API.
+
+## Installation
+
+Simply `uv add handcron` or `pip install handcron`.
+
+If you'd like to use PostgreSQL as your storage backend, install the `postgres` extra:
+`uv add handcron[postgres]` or `pip install handcron[postgres]`.
 
 ## Example
 
@@ -44,7 +59,7 @@ INFO     handcron.cli: Summary of instance 'handcron':
 than a background service. It won't prevent your CPU from entering a low-power state;
 the machine could even be turned off most of the time.
 - _handcron_ has no heavy dependencies and is easily run natively on Windows or Linux.
-With _uv_, your scheduled command can be as simple as: ```uv run --with handcron handcron my_tasks.cron```
+With _uv_, your scheduled command can be as simple as: ```uv run --with handcron handcron tick my_tasks.cron```
 
 ### Plain cron(8), Systemd timer + service
 

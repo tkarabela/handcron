@@ -253,3 +253,7 @@ class CLI:
                 return self._load_module_attribute(dotted_path)
             else:
                 raise
+
+
+def main() -> int:
+    return CLI().run(sys.argv[1:])

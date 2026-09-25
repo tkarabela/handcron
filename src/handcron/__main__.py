@@ -1,6 +1,6 @@
 import sys
 
-from handcron.cli import CLI
+from handcron.cli import main
 
 if __name__ == "__main__":
-    sys.exit(CLI().run(sys.argv[1:]))
+    sys.exit(main())

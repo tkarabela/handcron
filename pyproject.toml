@@ -3,14 +3,42 @@ name = "handcron"
 version = "0.1.0"
 requires-python = ">=3.12"
 readme = "README.md"
-license = { file = "LICENSE.txt" }
+license = "MIT"
+license-files = ["LICENSE.txt"]
 authors = [
     { name = "Tomas Karabela", email = "tkarabela@seznam.cz" },
+]
+keywords = [
+    "cron", "crontab", "anacron", "scheduler", "job scheduler",
+    "task queue", "periodic tasks", "scheduled tasks", "batch jobs",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Systems Administration",
+    "Topic :: Utilities",
+    "Typing :: Typed",
 ]
 dependencies = [
     "croniter>=6.2.4",
     "tabulate>=0.10.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/tkarabela/handcron"
+"Bug Tracker" = "https://github.com/tkarabela/handcron/issues"
+
+[project.scripts]
+handcron = "handcron.cli:main"
 
 [project.optional-dependencies]
 postgres = [
@@ -30,6 +58,14 @@ dev = [
 [build-system]
 requires = ["uv_build>=0.12.18,<0.13"]
 build-backend = "uv_build"
+requires = ["hatchling>=1.27", "hatch-vcs>=0.5"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.targets.sdist]
+include = ["/src", "/tests", "/README.md", "/LICENSE.txt"]
 
 [tool.ruff.lint]
 ignore = ["DTZ"]

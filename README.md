@@ -11,7 +11,6 @@ Like a traditional task queue, _handcron_ gives you visibility into task history
 It is similar to [django-cron](https://github.com/Tivix/django-cron) and [anacron(8)](https://linux.die.net/man/8/anacron),
 but comes as a simple Python library with [Huey](https://github.com/coleifer/huey)-inspired API.
 
-
 ## Example
 
 ```python
@@ -45,3 +44,7 @@ With _uv_, your scheduled command can be as simple as: ```uv run --with handcron
 - _handcron_ can catch up with missed task runs, unlike cron(8).
 - _handcron_ keeps a database of past runs and their status, it has better visibility than flat logs.
 - _handcron_ allows you to define tasks on different schedules in one place.
+
+## License
+
+MIT – see [LICENSE.txt](./LICENSE.txt).

@@ -5,7 +5,7 @@ from datetime import date
 from handcron.consumer.base import BaseConsumer
 from handcron.consumer.process import ProcessConsumer
 from handcron.consumer.simple import SimpleConsumer
-from handcron.data import PeriodicTask, TaskFn, TaskKey, WorkerType, PathOrStr
+from handcron.data import PathOrStr, PeriodicTask, TaskFn, TaskKey, WorkerType
 from handcron.scheduler import Scheduler
 from handcron.storage.base import BaseStorage
 from handcron.storage.memory import MemoryStorage

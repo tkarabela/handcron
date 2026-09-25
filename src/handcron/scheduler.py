@@ -96,10 +96,11 @@ class Scheduler:
 
     @staticmethod
     def _time_valid_for_task(time: datetime, task: PeriodicTask) -> bool:
-        if (start_date := task.start_date) is not None:
-            if time.date() < start_date:
-                return False
-        elif (end_date := task.end_date) is not None:
-            if time.date() > end_date:
-                return False
-        return True
+        return not (
+            (
+                (start_date := task.start_date) is not None and time.date() < start_date
+            ) or
+            (
+                (end_date := task.end_date) is not None and time.date() > end_date
+            )
+        )

@@ -3,11 +3,9 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date, datetime
 from enum import IntEnum, StrEnum
-from typing import Union
 from uuid import UUID
 
-
-PathOrStr = Union[str, os.PathLike]
+PathOrStr = str | os.PathLike[str]
 
 
 class TaskRunStatus(IntEnum):

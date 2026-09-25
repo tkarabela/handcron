@@ -1,8 +1,8 @@
-from .core import Handcron, MemoryHandcron, SqliteHandcron, PostgresHandcron
+from .core import Handcron, MemoryHandcron, PostgresHandcron, SqliteHandcron
 
 __all__ = [
     "Handcron",
     "MemoryHandcron",
-    "SqliteHandcron",
     "PostgresHandcron",
+    "SqliteHandcron",
 ]

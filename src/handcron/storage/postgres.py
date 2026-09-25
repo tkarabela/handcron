@@ -1,7 +1,7 @@
 from types import TracebackType
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
-from handcron.data import PathOrStr, TaskKey, TaskRunStatus, TaskRun
+from handcron.data import PathOrStr, TaskKey, TaskRun, TaskRunStatus
 from handcron.storage.base import BaseStorage
 
 if TYPE_CHECKING:
@@ -32,10 +32,12 @@ class PostgresStorage(BaseStorage):
         TaskRun]:
         pass  # TODO
 
+    @override
     def __enter__(self) -> "BaseStorage":
-        pass  # TODO
+        # TODO
         return self
 
+    @override
     def __exit__(
             self,
             exc_type: type[BaseException] | None,

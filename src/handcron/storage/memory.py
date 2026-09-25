@@ -30,7 +30,7 @@ class MemoryStorage(BaseStorage):
         self._task_runs.append(run)
 
     def get_task_keys(self) -> list[TaskKey]:
-        return list(set(run.key for run in self._task_runs))
+        return list({run.key for run in self._task_runs})
 
     def flush(self) -> None:
         self._task_runs.clear()

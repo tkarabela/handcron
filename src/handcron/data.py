@@ -13,12 +13,12 @@ class TaskRunStatus(IntEnum):
     Status of a `TaskRun`
 
     Attributes:
-        DONE: The task finished successfully
-        FAILED: The task did not finish correctly
+        SUCCESS: The task finished successfully
+        FAILURE: The task did not finish correctly
 
     """
-    DONE = 0
-    FAILED = 1
+    SUCCESS = 0
+    FAILURE = 1
 
 
 @dataclass(frozen=True, order=True)
@@ -81,8 +81,8 @@ class PeriodicTask:
     key: TaskKey
     fn: TaskFn
     cron: str
-    start_date: date | None
-    end_date: date | None
+    start_date: date | None = None
+    end_date: date | None = None
 
 
 @dataclass(frozen=True)

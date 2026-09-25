@@ -21,9 +21,9 @@ class ProcessConsumer(BaseSerialConsumer):
         p.join()
         if p.exitcode != 0:
             logger.error("task run %s (%s) process exited with code %r", due_task.task.key, run_id.hex, p.exitcode)
-            return TaskRunStatus.FAILED
+            return TaskRunStatus.FAILURE
         else:
-            return TaskRunStatus.DONE
+            return TaskRunStatus.SUCCESS
 
     @staticmethod
     def _execute_task_fn_inner(fn: TaskFn) -> None:

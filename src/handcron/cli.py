@@ -165,7 +165,7 @@ class CLI:
         consumer = cron.create_consumer(worker_type)
         logger.info("starting oneshot run (note: it will not be written to storage)")
         run = consumer.run_oneshot(task)
-        return 0 if run.status == TaskRunStatus.DONE else 1
+        return 0 if run.status == TaskRunStatus.SUCCESS else 1
 
     def run_describe(self, cron: Handcron, args: Namespace) -> int:
         schedule_only: bool = args.schedule_only

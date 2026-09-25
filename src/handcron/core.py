@@ -47,7 +47,13 @@ class Handcron(ABC):
         def decorator(fn: TaskFn) -> TaskFn:
             name_ = name
             if name_ is None:
-                name_ = fn.__qualname__
+                try:
+                    name_ = fn.__qualname__
+                except AttributeError:
+                    try:
+                        name_ = fn.__name__
+                    except AttributeError as e:
+                        raise ValueError("Failed to derive name from callable, please use explicit 'name' parameter") from e
 
             self.scheduler.register_task(PeriodicTask(
                 key=self._make_task_key(name_),

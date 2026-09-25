@@ -18,7 +18,7 @@ class SimpleConsumer(BaseSerialConsumer):
     def _execute_task_fn(self, due_task: DueTask, run_id: UUID) -> TaskRunStatus:
         try:
             due_task.task.fn()
-            return TaskRunStatus.DONE
+            return TaskRunStatus.SUCCESS
         except Exception:
             logger.exception("task failed with exception")
-            return TaskRunStatus.FAILED
+            return TaskRunStatus.FAILURE

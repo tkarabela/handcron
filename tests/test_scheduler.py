@@ -1,8 +1,11 @@
+import logging
 from datetime import date, datetime
+from functools import partial
 from uuid import uuid1
 
 import pytest
 
+from handcron import MemoryHandcron
 from handcron.data import PeriodicTask, TaskKey, TaskRun, TaskRunStatus
 from handcron.scheduler import Scheduler
 
@@ -48,7 +51,7 @@ def test_scheduling_due_task(
     last_run = TaskRun(
         key=TaskKey("test", "test"),
         id=uuid1(),
-        status=TaskRunStatus.DONE,
+        status=TaskRunStatus.SUCCESS,
         time_scheduled=last_run_datetime,
         time_started=last_run_datetime,
         time_finished=last_run_datetime,
@@ -56,3 +59,37 @@ def test_scheduling_due_task(
 
     due_task = Scheduler.into_due_task(NOW, task, last_run)
     assert due_task is not None if should_schedule else due_task is None
+
+
+def test_cron_validation():
+    cron = MemoryHandcron()
+    scheduler = cron.scheduler
+
+    with pytest.raises(ValueError):
+        scheduler.register_task(PeriodicTask(
+            TaskKey(cron.name, "test"),
+            lambda: None,
+            "bad cron definition",
+        ))
+
+
+def test_callable_with_parameters(caplog):
+    cron = MemoryHandcron()
+    scheduler = cron.scheduler
+
+    caplog.set_level(logging.WARNING)
+    scheduler.register_task(PeriodicTask(
+        TaskKey(cron.name, "test"),
+        lambda foo: None,
+        "@daily",
+    ))
+    assert "Callable for task test appears to have mandatory parameter foo without a default value" in caplog.text
+
+
+def test_callable_without_name():
+    cron = MemoryHandcron()
+
+    cron.periodic_task("@daily", name="explicit_name")(partial(lambda foo: foo, "foo_value"))
+
+    with pytest.raises(ValueError):
+        cron.periodic_task("@daily")(partial(lambda foo: foo, "foo_value"))

@@ -1,5 +1,7 @@
+import inspect
 import logging
 from datetime import datetime
+from inspect import Parameter
 
 from croniter import croniter
 
@@ -22,6 +24,24 @@ class Scheduler:
         When adding a task with the same name multiple times,
         they are overwritten with a warning.
         """
+        # validate cron definition
+        try:
+            croniter.expand(task.cron)
+        except Exception as e:
+            raise ValueError(f"Malformed cron definition {task.cron!r} for task {task.key.task_name}: {e}") from e
+
+        # validate function signature
+        sig = inspect.signature(task.fn)
+        for parameter in sig.parameters.values():
+            if parameter.default == Parameter.empty:
+                logger.warning(
+                    "Callable for task %s appears to have mandatory parameter %s without a default value "
+                    "- this will fail at runtime!",
+                    task.key.task_name,
+                    parameter.name
+                )
+                break
+
         key = task.key
         if key in self.periodic_tasks:
             logger.warning("redefining previously declared periodic task %r", key.task_name)

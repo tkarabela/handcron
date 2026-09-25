@@ -44,9 +44,9 @@ class BaseConsumer(ABC):
     def log_run_end(self, run: TaskRun, write_to_storage: bool = True) -> None:
         """Call this after running a task"""
         match run.status:
-            case TaskRunStatus.DONE:
+            case TaskRunStatus.SUCCESS:
                 logger.info("task run %s (%s) finished", run.key, run.id.hex)
-            case TaskRunStatus.FAILED:
+            case TaskRunStatus.FAILURE:
                 logger.error("task run %s (%s) failed", run.key, run.id.hex)
             case _:
                 raise NotImplementedError("bad task run status type")

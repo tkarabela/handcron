@@ -22,11 +22,18 @@ def my_task():
     print("Hello from my task")
 ```
 
-```shell
-handcron tick my_tasks.cron             # drain the queue once and exit
-handcron serve my_tasks.cron            # drain the queue periodically
-handcron oneshot my_tasks.cron my_task  # run a task without scheduling
-handcron describe my_tasks.cron         # print task schedule and last run status
+```
+$ handcron tick my_tasks.cron             # drain the queue once and exit
+$ handcron serve my_tasks.cron            # drain the queue periodically
+$ handcron oneshot my_tasks.cron my_task  # run a task without scheduling
+$ handcron describe my_tasks.cron         # print task schedule and last run status
+
+INFO     handcron.cli: Summary of instance 'handcron':
+┌──────────┬─────────┬──────────────────────────────┬──────────────┬────────────┐
+│ task     │ cron    │ last run                     │ start_date   │ end_date   │
+├──────────┼─────────┼──────────────────────────────┼──────────────┼────────────┤
+│ my_task  │ @daily  │ SUCCESS  2026-09-25 18:55:21 │              │            │
+└──────────┴─────────┴──────────────────────────────┴──────────────┴────────────┘
 ```
 
 ## handcron vs. alternatives

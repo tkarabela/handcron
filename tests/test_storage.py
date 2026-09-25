@@ -72,33 +72,33 @@ def test_empty(storage: BaseStorage) -> None:
 
 
 def test_get_task_keys(storage: BaseStorage) -> None:
-    storage.write_task_run(make_run(KEY_B, TaskRunStatus.DONE, 0))
-    storage.write_task_run(make_run(KEY_A, TaskRunStatus.DONE, 1))
-    storage.write_task_run(make_run(KEY_A, TaskRunStatus.FAILED, 2))
+    storage.write_task_run(make_run(KEY_B, TaskRunStatus.SUCCESS, 0))
+    storage.write_task_run(make_run(KEY_A, TaskRunStatus.SUCCESS, 1))
+    storage.write_task_run(make_run(KEY_A, TaskRunStatus.FAILURE, 2))
     assert sorted(storage.get_task_keys()) == [KEY_A, KEY_B]
 
 
 def test_round_trip(storage: BaseStorage) -> None:
-    run = make_run(KEY_A, TaskRunStatus.FAILED, 0)
+    run = make_run(KEY_A, TaskRunStatus.FAILURE, 0)
     storage.write_task_run(run)
     assert storage.get_last_task_runs(KEY_A) == [run]
 
 
 def test_last_task_runs_order_and_status(storage: BaseStorage) -> None:
-    run0 = make_run(KEY_A, TaskRunStatus.DONE, 0)
-    run1 = make_run(KEY_A, TaskRunStatus.FAILED, 1)
-    run2 = make_run(KEY_A, TaskRunStatus.DONE, 2)
-    other = make_run(KEY_B, TaskRunStatus.DONE, 3)
+    run0 = make_run(KEY_A, TaskRunStatus.SUCCESS, 0)
+    run1 = make_run(KEY_A, TaskRunStatus.FAILURE, 1)
+    run2 = make_run(KEY_A, TaskRunStatus.SUCCESS, 2)
+    other = make_run(KEY_B, TaskRunStatus.SUCCESS, 3)
     for run in [run1, other, run0, run2]:
         storage.write_task_run(run)
 
     assert storage.get_last_task_runs(KEY_A) == [run2, run1, run0]
-    assert storage.get_last_task_runs(KEY_A, status=TaskRunStatus.DONE) == [run2, run0]
-    assert storage.get_last_task_runs(KEY_A, status=TaskRunStatus.FAILED) == [run1]
+    assert storage.get_last_task_runs(KEY_A, status=TaskRunStatus.SUCCESS) == [run2, run0]
+    assert storage.get_last_task_runs(KEY_A, status=TaskRunStatus.FAILURE) == [run1]
 
 
 def test_last_task_runs_limit_returns_newest(storage: BaseStorage) -> None:
-    runs = [make_run(KEY_A, TaskRunStatus.DONE, hours) for hours in range(5)]
+    runs = [make_run(KEY_A, TaskRunStatus.SUCCESS, hours) for hours in range(5)]
     for run in runs:
         storage.write_task_run(run)
 
@@ -108,13 +108,13 @@ def test_last_task_runs_limit_returns_newest(storage: BaseStorage) -> None:
 
 
 def test_last_task_runs_limit_with_status(storage: BaseStorage) -> None:
-    done_old = make_run(KEY_A, TaskRunStatus.DONE, 0)
-    done_new = make_run(KEY_A, TaskRunStatus.DONE, 1)
-    failed = make_run(KEY_A, TaskRunStatus.FAILED, 2)
+    done_old = make_run(KEY_A, TaskRunStatus.SUCCESS, 0)
+    done_new = make_run(KEY_A, TaskRunStatus.SUCCESS, 1)
+    failed = make_run(KEY_A, TaskRunStatus.FAILURE, 2)
     for run in [done_old, done_new, failed]:
         storage.write_task_run(run)
 
-    assert storage.get_last_task_runs(KEY_A, limit=1, status=TaskRunStatus.DONE) == [done_new]
+    assert storage.get_last_task_runs(KEY_A, limit=1, status=TaskRunStatus.SUCCESS) == [done_new]
 
 
 @pytest.mark.parametrize("limit", [0, -1])
@@ -124,8 +124,8 @@ def test_last_task_runs_invalid_limit(storage: BaseStorage, limit: int) -> None:
 
 
 def test_last_successful_task_run(storage: BaseStorage) -> None:
-    done = make_run(KEY_A, TaskRunStatus.DONE, 0)
-    failed = make_run(KEY_A, TaskRunStatus.FAILED, 1)
+    done = make_run(KEY_A, TaskRunStatus.SUCCESS, 0)
+    failed = make_run(KEY_A, TaskRunStatus.FAILURE, 1)
     storage.write_task_run(done)
     storage.write_task_run(failed)
 
@@ -134,14 +134,14 @@ def test_last_successful_task_run(storage: BaseStorage) -> None:
 
 
 def test_flush(storage: BaseStorage) -> None:
-    storage.write_task_run(make_run(KEY_A, TaskRunStatus.DONE, 0))
+    storage.write_task_run(make_run(KEY_A, TaskRunStatus.SUCCESS, 0))
     storage.flush()
     assert storage.get_task_keys() == []
     assert storage.get_last_task_runs(KEY_A) == []
 
 
 def test_persists_across_connections(cron: Handcron) -> None:
-    run = make_run(KEY_A, TaskRunStatus.DONE, 0)
+    run = make_run(KEY_A, TaskRunStatus.SUCCESS, 0)
     with cron.storage:
         cron.storage.write_task_run(run)
     with cron.storage:

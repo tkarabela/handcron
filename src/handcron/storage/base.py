@@ -58,7 +58,7 @@ class BaseStorage(AbstractContextManager["BaseStorage", None]):
 
     def get_last_successful_task_run(self, key: TaskKey) -> TaskRun | None:
         """Return successful `TaskRun` with the latest `TaskRun.time_started`, or None"""
-        match self.get_last_task_runs(key, limit=1, status=TaskRunStatus.DONE):
+        match self.get_last_task_runs(key, limit=1, status=TaskRunStatus.SUCCESS):
             case [run]:
                 return run
             case []:

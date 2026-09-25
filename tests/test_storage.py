@@ -11,6 +11,7 @@ from handcron.data import TaskKey, TaskRun, TaskRunStatus
 from handcron.storage.base import BaseStorage
 
 POSTGRES_DSN_ENV = "HANDCRON_TEST_POSTGRES_DSN"
+REQUIRE_POSTGRES_ENV = "HANDCRON_TEST_REQUIRE_POSTGRES"
 
 KEY_A = TaskKey("test", "a")
 KEY_B = TaskKey("test", "b")
@@ -38,6 +39,10 @@ def make_cron(backend: str, tmp_path: Path) -> Handcron:
         case "postgres":
             dsn = os.environ.get(POSTGRES_DSN_ENV)
             if not dsn:
+                if os.environ.get(REQUIRE_POSTGRES_ENV):
+                    pytest.fail(
+                        f"{REQUIRE_POSTGRES_ENV} is set but {POSTGRES_DSN_ENV} is not"
+                    )
                 pytest.skip(f"set {POSTGRES_DSN_ENV} to run PostgreSQL tests")
             return PostgresHandcron(dsn)
         case _:

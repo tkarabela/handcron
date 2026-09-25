@@ -1,6 +1,6 @@
 [project]
 name = "handcron"
-version = "0.1.0"
+dynamic = ["version"]
 requires-python = ">=3.12"
 readme = "README.md"
 license = "MIT"
@@ -56,8 +56,6 @@ dev = [
 ]
 
 [build-system]
-requires = ["uv_build>=0.12.18,<0.13"]
-build-backend = "uv_build"
 requires = ["hatchling>=1.27", "hatch-vcs>=0.5"]
 build-backend = "hatchling.build"
 
@@ -66,6 +64,10 @@ source = "vcs"
 
 [tool.hatch.build.targets.sdist]
 include = ["/src", "/tests", "/README.md", "/LICENSE.txt"]
+
+[tool.uv]
+# Rebuild the editable install when the commit or tags change, so the version stays current
+cache-keys = [{ file = "pyproject.toml" }, { git = { commit = true, tags = true } }]
 
 [tool.ruff.lint]
 ignore = ["DTZ"]

@@ -17,7 +17,7 @@ from time import sleep
 
 from tabulate import tabulate
 
-from handcron import Handcron
+from handcron import Handcron, __version__
 from handcron.data import TaskKey, TaskRun, TaskRunStatus, WorkerType
 
 logger = logging.getLogger(__name__)
@@ -34,6 +34,9 @@ class CLI:
     def __init__(self) -> None:
         self.parser = ArgumentParser(
             "handcron", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+        )
+        self.parser.add_argument(
+            "-V", "--version", action="version", version=f"%(prog)s {__version__}"
         )
         verbose_group = self.parser.add_mutually_exclusive_group()
         verbose_group.add_argument(

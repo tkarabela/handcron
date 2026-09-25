@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 
+import handcron
 from handcron.cli import CLI
 from handcron.data import WorkerType
 
@@ -42,3 +43,10 @@ def test_demo_by_invoking_cli_from_python(worker: WorkerType, cron: str):
         assert CLI().run(cmd) == 0
     finally:
         os.chdir(old_cwd)
+
+
+def test_version(capsys: pytest.CaptureFixture[str]):
+    with pytest.raises(SystemExit) as excinfo:
+        CLI().run(["--version"])
+    assert excinfo.value.code == 0
+    assert capsys.readouterr().out.strip() == f"handcron {handcron.__version__}"

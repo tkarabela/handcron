@@ -1,12 +1,10 @@
-# 🕐 handcron
+# 🕐 handcron 💁
 
-Lightweight Python library for periodic tasks.
+_Lightweight Python library for periodic tasks_
 
 Unlike a traditional task queue, _handcron_ is designed to process
 due tasks and then stop - by default, there is no long-running process in the background. 
-Instead, you periodically run _handcron_ yourself (from a cron, etc.).
-
-Like a traditional task queue, _handcron_ gives you visibility into task history.
+Instead, you periodically run `handcron tick` yourself (from a cron, etc.).
 
 It is similar to [django-cron](https://github.com/Tivix/django-cron) and [anacron(8)](https://linux.die.net/man/8/anacron),
 but comes as a simple Python library with [Huey](https://github.com/coleifer/huey)-inspired API.
@@ -17,7 +15,7 @@ but comes as a simple Python library with [Huey](https://github.com/coleifer/hue
 # my_tasks.py
 from handcron import SqliteHandcron
 
-cron = SqliteHandcron("handcron.bin")
+cron = SqliteHandcron("handcron.sqlite")
 
 @cron.periodic_task("@daily")
 def my_task():
@@ -25,8 +23,10 @@ def my_task():
 ```
 
 ```shell
-handcron my_tasks.cron  # drains the queue once and exits
-handcron my_tasks.cron --scheduler-interval 600  # long-running process, drains queue every 10 minutes
+handcron tick my_tasks.cron             # drain the queue once and exit
+handcron serve my_tasks.cron            # drain the queue periodically
+handcron oneshot my_tasks.cron my_task  # run a task without scheduling
+handcron describe my_tasks.cron         # print task schedule and last run status
 ```
 
 ## handcron vs. alternatives

@@ -14,7 +14,7 @@ from handcron.storage.sqlite import SqliteStorage
 logger = logging.getLogger(__name__)
 
 
-_DEFAULT_APP_NAME = "handcron"
+_DEFAULT_CRON_NAME = "handcron"
 
 
 class Handcron(ABC):
@@ -27,7 +27,7 @@ class Handcron(ABC):
     This is an abstract class - pick a suitable subclass based
     on your storage needs.
     """
-    def __init__(self, name: str = _DEFAULT_APP_NAME) -> None:
+    def __init__(self, name: str = _DEFAULT_CRON_NAME) -> None:
         self.name = name
         self.storage = self._make_storage()
         self.scheduler = Scheduler(self.storage)
@@ -50,7 +50,7 @@ class Handcron(ABC):
                 name_ = fn.__qualname__
 
             self.scheduler.register_task(PeriodicTask(
-                key=TaskKey(self.name, name_),
+                key=self._make_task_key(name_),
                 fn=fn,
                 cron=cron,
                 start_date=start_date,
@@ -58,6 +58,13 @@ class Handcron(ABC):
             ))
             return fn
         return decorator
+
+    def get_periodic_task(self, task_name: str) -> PeriodicTask:
+        key = self._make_task_key(task_name)
+        return self.scheduler.periodic_tasks[key]
+
+    def _make_task_key(self, task_name: str) -> TaskKey:
+        return TaskKey(self.name, task_name)
 
     def create_consumer(self, worker_type: WorkerType = WorkerType.SIMPLE) -> BaseConsumer:
         """

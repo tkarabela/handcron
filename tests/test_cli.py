@@ -16,6 +16,7 @@ def test_demo_memory(worker: WorkerType, cron: str):
         sys.executable,
         "-m",
         "handcron",
+        "tick",
         "--worker",
         worker.value,
         cron,
